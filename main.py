@@ -1,55 +1,165 @@
-# TIC TAC TOE
+import random
 
-# LENTA
-zaidimo_lenta = [
+# TICTACTOE Lenta
+board = [
     ['', '', ''],
     ['', '', ''],
     ['', '', '']
 ]
-zaidejas = 1
+
+
 def display_board():
-    for eile in zaidimo_lenta:
-        print('|'.join(eile))
+    for row in board:
+        print('|'.join(row))
         print('-----')
 
-print(f'Zaidejas {zaidejas}, pasirinkite savo simboli (X ar O):')
 
-while True:
-    try:
-        eile = int(input(f'Zaidejas, pasirinkite eile (0-2): '))
-        stulpelis = int(input(f'Zaidejas {zaidejas}, pasirinkite stulpeli (0-2): '))
+def reset_board():
+    global board
+    board = [['', '', ''], ['', '', ''], ['', '', '']]
 
-        if 0 <= eile < 3 and 0 <= stulpelis < 3 and zaidimo_lenta[eile][stulpelis] == '':
 
-            zaidimo_lenta[eile][stulpelis] = 'X' if zaidejas == 1 else 'O'
-            break
+def reset_game():
+    reset_board()
+    display_board()
+
+
+def update_board(row, col, symbol):
+    if board[row][col] == '':
+        board[row][col] = symbol
+        return True
+    else:
+        return False
+
+
+def get_player_symbol():
+    while True:
+        symbol = input("Pasirinkite savo simboli (X ar O): ").upper()
+        if symbol in ['X', 'O']:
+            return symbol
         else:
-            print('Bandyk dar karta')
+            print("Neteisingas pasirinkimas. Pasirinkite X arba O.")
 
-        display_board()
-    except ValueError:
-        print('Praleimejai, zaisk is naujo')
 
-# while True:
-    display_board()
-    player_move()
+def computer_move():
+    empty_cells = [(i, j) for i in range(3) for j in range(3) if board[i][j] == '']
+    if empty_cells:
+        row, col = random.choice(empty_cells)
+        board[row][col] = 'O'
+    else:
+        print("Nebera ejimu.")
 
-# kas laimejo
-    if laimetojas('X'):
-        print("Tu laimejai!")
-        reset_game()
-        break
 
-    if check_win('O'):
-        print("Pralaimejai, bandyk is naujo")
-        reset_game()
-        break
+def check_win(symbol):
+    # kas laimejo
+    for i in range(3):
+        if all(board[i][j] == symbol for j in range(3)) or all(board[j][i] == symbol for j in range(3)):
+            return True
+    if all(board[i][i] == symbol for i in range(3)) or all(board[i][2 - i] == symbol for i in range(3)):
+        return True
+    return False
 
-    elif lygiosios():
-        print("Lygiosios", "Bandyk is naujo")
-        reset_game()
-        break
 
-    display_board()
+def check_tie():
+    return all(all(cell != '' for cell in row) for row in board)
+
+
+# loopas
+while True:
     reset_game()
 
+    player_symbol = get_player_symbol()
+    computer_symbol = 'O' if player_symbol == 'X' else 'X'
+
+    round_count = 1
+    while True:
+        print(f"\nPartija {round_count}")
+        display_board()
+
+        try:
+            row = int(input('Pasirinkite eile (0-2): '))
+            col = int(input('Pasirinkite stulpeli (0-2): '))
+            if 0 <= row < 3 and 0 <= col < 3:
+                if update_board(row, col, player_symbol):
+                    display_board()
+                else:
+                    print('Negalimas variantas, bandyk dar karta')
+                    continue
+            else:
+                print('Neteisingas pasirinkimas, pasirink nuo 0 iki 2')
+                continue
+        except ValueError:
+            print('Netinkamas pasirinkimas.')
+            continue
+
+        if check_win(player_symbol):
+            print("Tu laimejai!")
+            break
+        elif check_tie():
+            print("Lygiosios. Bandom is naujo!")
+            break
+
+        computer_move()
+        print("Antras zaidejas pasirinko:")
+        display_board()
+
+        if check_win(computer_symbol):
+            print("Kompiuteris laimejo. Bandyk is naujo!")
+            break
+        elif check_tie():
+            print("Lygiosios. Bandom is naujo!")
+            break
+
+        round_count += 1
+
+    # ... (previous code)
+
+    round_count = 1
+    while True:
+        print(f"\nPartija {round_count}")
+        display_board()
+
+        # Player's move
+        try:
+            row = int(input('Pasirinkite eile (0-2): '))
+            col = int(input('Pasirinkite stulpeli (0-2): '))
+            if 0 <= row < 3 and 0 <= col < 3:
+                if update_board(row, col, player_symbol):
+                    display_board()
+                else:
+                    print('Negalimas variantas, bandyk dar karta')
+                    continue
+            else:
+                print('Neteisingas pasirinkimas, pasirink nuo 0 iki 2')
+                continue
+        except ValueError:
+            print('Netinkamas pasirinkimas, bandykite dar karta')
+            continue
+
+        # Check for a win or a tie after player's move
+        if check_win(player_symbol):
+            print("Tu laimejai!")
+            break
+        elif check_tie():
+            print("Lygiosios. Bandom is naujo!")
+            break
+
+        computer_move()
+        print("Antras zaidejas pasirinko:")
+        display_board()
+
+        if check_win(computer_symbol):
+            print("Pralaimejai, Bandyk is naujo!")
+            break
+        elif check_tie():
+            print("Lygiosios. Bandom is naujo!")
+            break
+
+        round_count += 1
+
+    zaisti_dar_karta = input('Ar zaisi dar karta? (Taip/Ne): ').strip().lower()
+    if zaisti_dar_karta != 'taip':
+        print('Aciu uz zaidima! Viso gero!')
+        break
+
+    reset_game()
