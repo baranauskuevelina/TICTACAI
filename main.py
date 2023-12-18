@@ -119,7 +119,7 @@ while True:
         print(f"\nPartija {round_count}")
         display_board()
 
-        # Player's move
+
         try:
             row = int(input('Pasirinkite eile (0-2): '))
             col = int(input('Pasirinkite stulpeli (0-2): '))
@@ -136,7 +136,7 @@ while True:
             print('Netinkamas pasirinkimas, bandykite dar karta')
             continue
 
-        # Check for a win or a tie after player's move
+
         if check_win(player_symbol):
             print("Tu laimejai!")
             break
