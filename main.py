@@ -112,7 +112,7 @@ while True:
 
         round_count += 1
 
-    # ... (previous code)
+    # ...
 
     round_count = 1
     while True:
